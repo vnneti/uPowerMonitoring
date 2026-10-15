@@ -1,0 +1,124 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+             xmlns:vm="using:uPowerMonitoring.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="650"
+             x:Class="uPowerMonitoring.Views.DashBoard"
+             x:DataType="vm:DashBoardViewModel">
+
+    <Grid ColumnDefinitions="300, *" Margin="15">
+        
+        <!-- LINKE SPALTE: Konfiguration & Steuerung -->
+        <Border Grid.Column="0" Background="#F8F9FA" Padding="15" CornerRadius="8" Margin="0,0,15,0">
+            <ScrollViewer>
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Messung Steuerung" FontWeight="Bold" FontSize="16" Margin="0,0,0,5"/>
+                    
+                    <!-- Start / Stop Tasten -->
+                    <UniformGrid Columns="2" Margin="0,0,0,10">
+                        <Button Content="Start" Command="{Binding StartMeasurementCommand}" Background="#28A745" Foreground="White" HorizontalAlignment="Stretch" Margin="0,0,5,0"/>
+                        <Button Content="Stop" Command="{Binding StopMeasurementCommand}" Background="#DC3545" Foreground="White" HorizontalAlignment="Stretch" Margin="5,0,0,0"/>
+                    </UniformGrid>
+
+                    <Separator Margin="0,5"/>
+
+                    <TextBlock Text="INA228 Konfiguration" FontWeight="Bold" FontSize="16" Margin="0,0,0,5"/>
+
+                    <!-- ADC Range -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="ADC Range (VShunt)" FontWeight="SemiBold"/>
+                        <ComboBox ItemsSource="{Binding AdcRangeOptions}" SelectedItem="{Binding SelectedAdcRange}" HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+
+                    <!-- Conversion Time -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Conversion Time" FontWeight="SemiBold"/>
+                        <ComboBox ItemsSource="{Binding ConversionTimeOptions}" SelectedItem="{Binding SelectedConversionTime}" HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+
+                    <!-- Averaging -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Averaging (AVG)" FontWeight="SemiBold"/>
+                        <ComboBox ItemsSource="{Binding AveragingOptions}" SelectedItem="{Binding SelectedAveraging}" HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+
+                    <!-- Shunt Widerstand -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Shunt Widerstand (Ohm)" FontWeight="SemiBold"/>
+                        <TextBox Text="{Binding ShuntResistance}" />
+                    </StackPanel>
+
+                    <!-- Auslese-Intervall (20ms - 1000ms) -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Intervall (ms): 20 - 1000" FontWeight="SemiBold"/>
+                        <NumericUpDown Value="{Binding SamplingIntervalMs}" Minimum="20" Maximum="1000" Increment="10"/>
+                    </StackPanel>
+
+                    <!-- Apply Button -->
+                    <Button Content="Apply Configuration" 
+                        Command="{Binding ApplyConfigurationCommand}" 
+                        IsEnabled="{Binding CanApplyConfiguration}"
+                        Background="#007BFF" Foreground="White" 
+                        HorizontalAlignment="Stretch" Margin="0,10,0,0"/>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <!-- RECHTE SPALTE: Indikatoren und Live-Diagramme -->
+        <Grid Grid.Column="1" RowDefinitions="Auto, *" Margin="0">
+            
+            <!-- OBERE REIHE: Digitale Indikatoren -->
+            <UniformGrid Grid.Row="0" Columns="4" Margin="0,0,0,15">
+                <Border Background="#F0F0F0" Padding="12" CornerRadius="8" Margin="4">
+                    <StackPanel>
+                        <TextBlock Text="Voltage" FontWeight="Bold" Foreground="Gray"/>
+                        <TextBlock Text="{Binding VoltageText}" FontSize="20" FontWeight="Bold"/>
+                    </StackPanel>
+                </Border>
+                
+                <Border Background="#F0F0F0" Padding="12" CornerRadius="8" Margin="4">
+                    <StackPanel>
+                        <TextBlock Text="Current" FontWeight="Bold" Foreground="Gray"/>
+                        <TextBlock Text="{Binding CurrentText}" FontSize="20" FontWeight="Bold"/>
+                    </StackPanel>
+                </Border>
+                
+                <Border Background="#F0F0F0" Padding="12" CornerRadius="8" Margin="4">
+                    <StackPanel>
+                        <TextBlock Text="Power" FontWeight="Bold" Foreground="Gray"/>
+                        <TextBlock Text="{Binding PowerText}" FontSize="20" FontWeight="Bold"/>
+                    </StackPanel>
+                </Border>
+                
+                <Border Background="#F0F0F0" Padding="12" CornerRadius="8" Margin="4">
+                    <StackPanel>
+                        <TextBlock Text="Temperature" FontWeight="Bold" Foreground="Gray"/>
+                        <TextBlock Text="{Binding TemperatureText}" FontSize="20" FontWeight="Bold"/>
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+
+            <!-- UNTERE REIHE: Die 3 Live-Diagramme -->
+            <Grid Grid.Row="1" ColumnDefinitions="*, *, *" Margin="0">
+                <StackPanel Grid.Column="0" Margin="4">
+                    <TextBlock Text="Voltage History (V)" FontWeight="Bold" Margin="0,0,0,5"/>
+                    <lvc:CartesianChart Series="{Binding VoltageSeries}" Height="230" AnimationsSpeed="0"/>
+                </StackPanel>
+                
+                <StackPanel Grid.Column="1" Margin="4">
+                    <TextBlock Text="Current History (A)" FontWeight="Bold" Margin="0,0,0,5"/>
+                    <lvc:CartesianChart Series="{Binding CurrentSeries}" Height="230" AnimationsSpeed="0"/>
+                </StackPanel>
+                
+                <StackPanel Grid.Column="2" Margin="4">
+                    <TextBlock Text="Power History (W)" FontWeight="Bold" Margin="0,0,0,5"/>
+                    <lvc:CartesianChart Series="{Binding PowerSeries}" Height="230" AnimationsSpeed="0"/>
+                </StackPanel>
+            </Grid>
+
+        </Grid>
+
+    </Grid>
+</UserControl>
