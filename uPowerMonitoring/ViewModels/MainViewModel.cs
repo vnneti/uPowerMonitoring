@@ -9,12 +9,14 @@
     {
         private readonly IIna228Service _inaService;
         private readonly ISampleService _sampleService;
+        private readonly IDataLoggerService _DataLoggerService;
 
         public DashBoardViewModel DashBoardViewModel { get; }
-        public MainViewModel(IIna228Service inaService, ISampleService sampleService, DashBoardViewModel dashBoardViewModel)
+        public MainViewModel(IIna228Service inaService, ISampleService sampleService, IDataLoggerService dataloggerservice, DashBoardViewModel dashBoardViewModel)
         {
             _inaService = inaService;
             _sampleService = sampleService;
+            _DataLoggerService = dataloggerservice;
             DashBoardViewModel = dashBoardViewModel;
             // Starte die Initialisierung im Hintergrund beim Start der App
             _ = InitializeHardwareAsync();

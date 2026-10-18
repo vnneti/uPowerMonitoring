@@ -23,6 +23,7 @@ public partial class App : Application
             var services = new ServiceCollection();
             services.AddSingleton<IIna228Service>(provider => new Ina228I2cService());
             services.AddSingleton<ISampleService, SampleService>();
+            services.AddSingleton<IDataLoggerService>(provider => new DataLogger());
             services.AddSingleton<DashBoardViewModel>();
             services.AddTransient<MainViewModel>();
            

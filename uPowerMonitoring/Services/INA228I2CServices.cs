@@ -76,7 +76,7 @@ public class Ina228I2cService : IIna228Service
     private readonly SemaphoreSlim _LockObject = new SemaphoreSlim(1,1);
     private string _FT232HSerialNumber ="";
     private byte _Ina228I2cAddress = 0x40; // I2C Adresse des INA228 (abhängig von A0/A1)
-
+    
     private double _ShuntResistor = 1.0;
     private double _VShuntLSB = INA228_VSHUNT0_LSB;
 

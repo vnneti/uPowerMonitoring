@@ -52,6 +52,7 @@ public class SampleService: ISampleService
     {
         using var timer = new PeriodicTimer(TimeSpan.FromMilliseconds(AbtastTimer));
         int tickCounter = 0;
+        int ticksPerSecond = 2000 / (int)AbtastTimer;
         try
         {
             while (await timer.WaitForNextTickAsync(token))
@@ -61,7 +62,7 @@ public class SampleService: ISampleService
 
                 // 2. Nur alle 50 Ticks (50 * 20ms = 1 Sekunde) die Temperatur abfragen
                 tickCounter++;
-                if (tickCounter >= 250)
+                if (tickCounter >= ticksPerSecond)
                 {
                     tickCounter = 0;
                     try

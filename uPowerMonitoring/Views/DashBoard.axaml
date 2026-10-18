@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+             xmlns:lvs="using:LiveChartsCore.SkiaSharpView"
              xmlns:vm="using:uPowerMonitoring.ViewModels"
              mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="650"
              x:Class="uPowerMonitoring.Views.DashBoard"
@@ -14,7 +15,7 @@
         <Border Grid.Column="0" Background="#F8F9FA" Padding="15" CornerRadius="8" Margin="0,0,15,0">
             <ScrollViewer>
                 <StackPanel Spacing="12">
-                    <TextBlock Text="Messung Steuerung" FontWeight="Bold" FontSize="16" Margin="0,0,0,5"/>
+                    <TextBlock Text="Measure control" FontWeight="Bold" FontSize="16" Margin="0,0,0,5"/>
                     
                     <!-- Start / Stop Tasten -->
                     <UniformGrid Columns="2" Margin="0,0,0,10">
@@ -22,9 +23,9 @@
                         <Button Content="Stop" Command="{Binding StopMeasurementCommand}" Background="#DC3545" Foreground="White" HorizontalAlignment="Stretch" Margin="5,0,0,0"/>
                     </UniformGrid>
 
-                    <Separator Margin="0,5"/>
+                    <Rectangle Height="1" Fill="#D0D0D0" Margin="0,5"/>
 
-                    <TextBlock Text="INA228 Konfiguration" FontWeight="Bold" FontSize="16" Margin="0,0,0,5"/>
+                    <TextBlock Text="INA228 configuration" FontWeight="Bold" FontSize="16" Margin="0,0,0,5"/>
 
                     <!-- ADC Range -->
                     <StackPanel Spacing="4">
@@ -46,14 +47,14 @@
 
                     <!-- Shunt Widerstand -->
                     <StackPanel Spacing="4">
-                        <TextBlock Text="Shunt Widerstand (Ohm)" FontWeight="SemiBold"/>
+                        <TextBlock Text="Shunt resistor (Ohm)" FontWeight="SemiBold"/>
                         <TextBox Text="{Binding ShuntResistance}" />
                     </StackPanel>
 
-                    <!-- Auslese-Intervall (20ms - 1000ms) -->
+                    <!-- Auslese-Intervall -->
                     <StackPanel Spacing="4">
-                        <TextBlock Text="Intervall (ms): 20 - 1000" FontWeight="SemiBold"/>
-                        <NumericUpDown Value="{Binding SamplingIntervalMs}" Minimum="20" Maximum="1000" Increment="10"/>
+                        <TextBlock Text="Intervall (ms): 50 - 1000" FontWeight="SemiBold"/>
+                        <NumericUpDown Value="{Binding SamplingIntervalMs}" Minimum="50" Maximum="1000" Increment="10"/>
                     </StackPanel>
 
                     <!-- Apply Button -->
@@ -62,60 +63,119 @@
                         IsEnabled="{Binding CanApplyConfiguration}"
                         Background="#007BFF" Foreground="White" 
                         HorizontalAlignment="Stretch" Margin="0,10,0,0"/>
-                </StackPanel>
+                        
+                    <Rectangle Height="1" Fill="#D0D0D0" Margin="0,5"/>
+
+                    <TextBlock Text="Datalogger(CSV)" FontWeight="Bold" FontSize="16" Margin="0,0,0,5"/>
+
+                    <!-- Dateinamen Prefix -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="File Prefix" FontWeight="SemiBold"/>
+                        <TextBox Text="{Binding FilePrefixInput}" PlaceholderText="z.B. TestMessung_Modul1" />
+                    </StackPanel>
+
+                    <!-- Logger Start / Stop -->
+                    <UniformGrid Columns="2" Margin="0,5,0,5">
+                        <Button Content="Start" Command="{Binding StartDataLoggerCommand}" Background="#17A2B8" Foreground="White" HorizontalAlignment="Stretch" Margin="0,0,5,0"/>
+                        <Button Content="Stop" Command="{Binding StopDataLoggerCommand}" Background="#6C757D" Foreground="White" HorizontalAlignment="Stretch" Margin="5,0,0,0"/>
+                    </UniformGrid>
+
+                    <!-- Aktuelle Datei & Status-Anzeige (Sauber kombiniert ohne Duplikat) -->
+                    <StackPanel Spacing="4" Margin="0,5,0,0">
+                        <TextBlock Text="Current File:" FontWeight="SemiBold" FontSize="11" Foreground="Gray"/>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Ellipse Width="12" Height="12" Fill="{Binding LoggerStatusColor}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding CurrentFilePath}" TextWrapping="Wrap" FontSize="11" Foreground="#333333" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                </StackPanel>     
             </ScrollViewer>
         </Border>
 
         <!-- RECHTE SPALTE: Indikatoren und Live-Diagramme -->
         <Grid Grid.Column="1" RowDefinitions="Auto, *" Margin="0">
             
-            <!-- OBERE REIHE: Digitale Indikatoren -->
-            <UniformGrid Grid.Row="0" Columns="4" Margin="0,0,0,15">
-                <Border Background="#F0F0F0" Padding="12" CornerRadius="8" Margin="4">
+            <!-- OBERE REIHE: Digitale Indikatoren (3x2 Gitter für 6 Karten) -->
+            <UniformGrid Grid.Row="0" Rows="2" Columns="3" Margin="0,0,0,15">
+                <Border Background="#F0F0F0" Padding="10" CornerRadius="8" Margin="4">
                     <StackPanel>
-                        <TextBlock Text="Voltage" FontWeight="Bold" Foreground="Gray"/>
-                        <TextBlock Text="{Binding VoltageText}" FontSize="20" FontWeight="Bold"/>
+                        <TextBlock Text="Voltage" FontWeight="Bold" Foreground="Gray" FontSize="11"/>
+                        <TextBlock Text="{Binding VoltageText}" FontSize="18" FontWeight="Bold"/>
                     </StackPanel>
                 </Border>
                 
-                <Border Background="#F0F0F0" Padding="12" CornerRadius="8" Margin="4">
+                <Border Background="#F0F0F0" Padding="10" CornerRadius="8" Margin="4">
                     <StackPanel>
-                        <TextBlock Text="Current" FontWeight="Bold" Foreground="Gray"/>
-                        <TextBlock Text="{Binding CurrentText}" FontSize="20" FontWeight="Bold"/>
+                        <TextBlock Text="Current" FontWeight="Bold" Foreground="Gray" FontSize="11"/>
+                        <TextBlock Text="{Binding CurrentText}" FontSize="18" FontWeight="Bold"/>
                     </StackPanel>
                 </Border>
                 
-                <Border Background="#F0F0F0" Padding="12" CornerRadius="8" Margin="4">
+                <Border Background="#F0F0F0" Padding="10" CornerRadius="8" Margin="4">
                     <StackPanel>
-                        <TextBlock Text="Power" FontWeight="Bold" Foreground="Gray"/>
-                        <TextBlock Text="{Binding PowerText}" FontSize="20" FontWeight="Bold"/>
+                        <TextBlock Text="Power" FontWeight="Bold" Foreground="Gray" FontSize="11"/>
+                        <TextBlock Text="{Binding PowerText}" FontSize="18" FontWeight="Bold"/>
                     </StackPanel>
                 </Border>
                 
-                <Border Background="#F0F0F0" Padding="12" CornerRadius="8" Margin="4">
+                <Border Background="#F0F0F0" Padding="10" CornerRadius="8" Margin="4">
                     <StackPanel>
-                        <TextBlock Text="Temperature" FontWeight="Bold" Foreground="Gray"/>
-                        <TextBlock Text="{Binding TemperatureText}" FontSize="20" FontWeight="Bold"/>
+                        <TextBlock Text="Temperature" FontWeight="Bold" Foreground="Gray" FontSize="11"/>
+                        <TextBlock Text="{Binding TemperatureText}" FontSize="18" FontWeight="Bold"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- 5. Energy (Trip-Zähler in mWh) -->
+                <Border Background="#E8F4F8" Padding="10" CornerRadius="8" Margin="4" BorderBrush="#17A2B8" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="Energy (Trip)" FontWeight="Bold" Foreground="#17A2B8" FontSize="11"/>
+                        <TextBlock Text="{Binding EnergyText}" FontSize="18" FontWeight="Bold"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- 6. Laufzeit (Elapsed Time) -->
+                <Border Background="#E8F8F0" Padding="10" CornerRadius="8" Margin="4" BorderBrush="#28A745" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="Running time" FontWeight="Bold" Foreground="#28A745" FontSize="11"/>
+                        <TextBlock Text="{Binding ElapsedTimeText}" FontSize="18" FontWeight="Bold"/>
                     </StackPanel>
                 </Border>
             </UniformGrid>
 
-            <!-- UNTERE REIHE: Die 3 Live-Diagramme -->
-            <Grid Grid.Row="1" ColumnDefinitions="*, *, *" Margin="0">
-                <StackPanel Grid.Column="0" Margin="4">
-                    <TextBlock Text="Voltage History (V)" FontWeight="Bold" Margin="0,0,0,5"/>
-                    <lvc:CartesianChart Series="{Binding VoltageSeries}" Height="230" AnimationsSpeed="0"/>
+            <!-- UNTERE REIHE: Die 3 Live-Diagramme UNTEREINANDER gestapelt -->
+            <Grid Grid.Row="1" RowDefinitions="*, *, *" Margin="0">
+                
+                <!-- 1. Voltage Chart (Oben) -->
+                <StackPanel Grid.Row="0" Margin="0,0,0,8">
+                    <TextBlock Text="Voltage History (V)" FontWeight="Bold" Margin="0,0,0,2"/>
+                    <lvc:CartesianChart Series="{Binding VoltageSeries}" Height="180" AnimationsSpeed="0">
+                        <lvc:CartesianChart.XAxes>
+                            <lvs:Axis TextSize="10"/>
+                        </lvc:CartesianChart.XAxes>
+                    </lvc:CartesianChart>
                 </StackPanel>
                 
-                <StackPanel Grid.Column="1" Margin="4">
-                    <TextBlock Text="Current History (A)" FontWeight="Bold" Margin="0,0,0,5"/>
-                    <lvc:CartesianChart Series="{Binding CurrentSeries}" Height="230" AnimationsSpeed="0"/>
+                <!-- 2. Current Chart (Mitte) -->
+                <StackPanel Grid.Row="1" Margin="0,0,0,8">
+                    <TextBlock Text="Current History (A)" FontWeight="Bold" Margin="0,0,0,2"/>
+                    <lvc:CartesianChart Series="{Binding CurrentSeries}" Height="180" AnimationsSpeed="0">
+                        <lvc:CartesianChart.XAxes>
+                            <lvs:Axis TextSize="10"/>
+                        </lvc:CartesianChart.XAxes>
+                    </lvc:CartesianChart>
                 </StackPanel>
                 
-                <StackPanel Grid.Column="2" Margin="4">
-                    <TextBlock Text="Power History (W)" FontWeight="Bold" Margin="0,0,0,5"/>
-                    <lvc:CartesianChart Series="{Binding PowerSeries}" Height="230" AnimationsSpeed="0"/>
+                <!-- 3. Power Chart (Unten) -->
+                <StackPanel Grid.Row="2" Margin="0">
+                    <TextBlock Text="Power History (W)" FontWeight="Bold" Margin="0,0,0,2"/>
+                    <lvc:CartesianChart Series="{Binding PowerSeries}" Height="180" AnimationsSpeed="0">
+                        <lvc:CartesianChart.XAxes>
+                            <lvs:Axis TextSize="10"/>
+                        </lvc:CartesianChart.XAxes>
+                    </lvc:CartesianChart>
                 </StackPanel>
+                
             </Grid>
 
         </Grid>
