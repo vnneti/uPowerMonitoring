@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -98,6 +99,13 @@ public partial class DashBoardViewModel : ObservableObject
         // - Windows: C:\Users\<User>\AppData\Local\uPowerMonitoring
         // - Linux:   /home/<user>/.local/share/uPowerMonitoring (oder ähnlich)
         string baseFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        string appFolder = Path.Combine(baseFolder, "uPowerMonitoring", "Logs");
+
+        // Das hier erstellt den Ordner automatisch, falls er fehlt:
+        if (!Directory.Exists(appFolder))
+        {
+            Directory.CreateDirectory(appFolder);
+        }
         string fileHeader = "Datalogger uPowerMonitoring\r\n";
         fileHeader += $"INA228 Settings: \r\n";
         fileHeader += $"ADC range:{_selectedAdcRange}\r\n";
@@ -106,7 +114,7 @@ public partial class DashBoardViewModel : ObservableObject
         fileHeader += $"Sample intervall: {_samplingIntervalMs}ms\r\n";
         fileHeader += $"Shunt resistor: {_shuntResistance}Ohm\r\n";
         _iDataLoggerService.SetFileHeader(fileHeader);
-        _iDataLoggerService.SetDirectory(baseFolder);
+        _iDataLoggerService.SetDirectory(appFolder);
         _iDataLoggerService.SetFilePrefix(FilePrefixInput);
         _iDataLoggerService.SetMaxFileSize(1);
         string[] headers = {"Index", "Voltage_V", "Current_A", "Power_W", "Temperature_C" };
