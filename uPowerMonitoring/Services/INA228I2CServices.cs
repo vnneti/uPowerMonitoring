@@ -81,6 +81,7 @@ public class Ina228I2cService : IIna228Service
     private double _VShuntLSB = INA228_VSHUNT0_LSB;
 
     private UInt32 _VBus = 0;
+    private Int32 _VShunt = 0;
     public Ina228I2cService()
     {        
         _FTMpsse = new FTMPSSEDevice();
@@ -156,13 +157,17 @@ public class Ina228I2cService : IIna228Service
         try
         {
             byte[] data = await ReadVShuntAsync(_Ina228I2cAddress);
-            Int32 Vshunt = ((data[0] << 24) | (data[1] << 16) | (data[2] << 8)) >> 12;
+            Int32 Vshunt = ((data[0] << 24) | (data[1] << 16) | (data[2]<< 8)) >> 12;
             await Task.Delay(1);
             data = await ReadVBusAsync(_Ina228I2cAddress);
             UInt32 Vbus = (UInt32)((data[0] << 16) | (data[1] << 8) | data[2]) >> 4;
+            
+            if (Vshunt != -1)
+                _VShunt = Vshunt;
             if(Vbus < 0xFFFFF)
                 _VBus = Vbus;
-            double current = (Vshunt*_VShuntLSB)/_ShuntResistor;
+
+            double current = (_VShunt*_VShuntLSB)/_ShuntResistor;
             double volt = (_VBus * INA228_VBUS_LSB);
             return new Ina228Measurement(            
                 Timestamp: DateTime.Now,

@@ -13,9 +13,9 @@ A robust, cross-platform (Windows & Linux) desktop application built with **Aval
   $$\text{Energy}_{\text{step}} = \frac{\text{Power (W)} \times \Delta t (\text{ms})}{3600.0}$$
 * **Configurable INA228 Sensor Settings:** Adjust parameters dynamically from the UI:
   * Shunt Resistance (e.g., $0.001\,\Omega$)
-  * ADC Range ($\pm 40\,\text{mV}$ to $\pm 160\,\text{mV}$)
+  * ADC Range ($\pm 40\text{mV}$ to $\pm 160\text{mV}$)
   * Conversion Time & Averaging (AVG)
-  * Sampling Interval ($20\,\text{ms}$ to $1000\,\text{ms}$)
+  * Sampling Interval ($20\text{ms}$ to $1000\text{ms}$)
 * **Automated CSV Data Logging:** Records measurement sessions into platform-independent system folders (`Environment.SpecialFolder.LocalApplicationData`), complete with a detailed session header containing active hardware settings.
 * **Cross-Platform:** Native performance and appearance on both Windows and Linux.
 
@@ -36,10 +36,6 @@ A robust, cross-platform (Windows & Linux) desktop application built with **Aval
 * **Sensor:** Texas Instruments INA228 (High-Precision Digital Power Monitor)
 * **Bridge Module:** **FTDI UM232H** (USB-to-I2C via MPSSE interface)
 * **Driver:** FTDI D2XX drivers (`libftd2xx` on Linux, native DLL on Windows).
-* **Typical Operational Parameters:** 
-  * Voltage: $\sim 11.2\,\text{V}$
-  * Current: $70\text{--}90\,\text{mA}$
-  * Sampling Rate: $50\,\text{ms}$ to $1000\,\text{ms}$
 
 ---
 
